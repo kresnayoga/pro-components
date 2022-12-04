@@ -2,7 +2,7 @@ import { openVisibleCompatible } from '@ant-design/pro-utils';
 import { Drawer } from 'antd';
 import classNames from 'classnames';
 import Omit from 'omit.js';
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import type { PrivateSiderMenuProps, SiderMenuProps } from './SiderMenu';
 import { SiderMenu } from './SiderMenu';
 import { useStyle } from './style/index';
@@ -19,6 +19,13 @@ const SiderMenuWrapper: React.FC<SiderMenuProps & PrivateSiderMenuProps> = (prop
     getContainer,
     prefixCls,
   } = props;
+
+  const [open, setOpen] = useState(false);
+
+  const onClose = () => {
+    setOpen(false);
+    onCollapse?.(true);
+  };
 
   useEffect(() => {
     if (isMobile === true) {
@@ -53,18 +60,23 @@ const SiderMenuWrapper: React.FC<SiderMenuProps & PrivateSiderMenuProps> = (prop
           ...style,
         }}
         closable={false}
+        maskClosable={true}
+        onClose={onClose}
+        open={open}
         getContainer={getContainer}
         width={siderWidth}
         bodyStyle={{ height: '100vh', padding: 0, display: 'flex', flexDirection: 'row' }}
       >
-        <SiderMenu
-          {...omitProps}
-          isMobile={true}
-          className={siderClassName}
-          collapsed={isMobile ? false : collapsed}
-          splitMenus={false}
-          originCollapsed={collapsed}
-        />
+        {
+          <SiderMenu
+            {...omitProps}
+            isMobile={true}
+            className={siderClassName}
+            collapsed={isMobile ? false : collapsed}
+            splitMenus={false}
+            originCollapsed={collapsed}
+          />
+        }
       </Drawer>
     ) : (
       <SiderMenu
