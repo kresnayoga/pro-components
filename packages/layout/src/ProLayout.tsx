@@ -21,6 +21,9 @@ import { PageLoading } from './components/PageLoading';
 import { SiderMenu } from './components/SiderMenu';
 import type { SiderMenuProps } from './components/SiderMenu/SiderMenu';
 import type { SiderMenuToken } from './components/SiderMenu/style';
+import { RightSiderMenu } from './components/RightSiderMenu';
+import type { RightSiderMenuProps } from './components/RightSiderMenu/RightSiderMenu';
+import type { RightSiderMenuToken } from './components/RightSiderMenu/style';
 import type { WaterMarkProps } from './components/WaterMark';
 import { RouteContext } from './context/RouteContext';
 import type { ProSettings } from './defaultSettings';
@@ -46,16 +49,19 @@ export type LayoutBreadcrumbProps = {
 type GlobalTypes = Omit<
   Partial<RouterTypes> &
     SiderMenuProps &
+    RightSiderMenuProps &
     HeaderViewProps & {
       token?: ProTokenType['layout'];
     },
-  'collapsed'
+  'collapsed' & 'rightCollapsed'
 >;
 
 export type ProLayoutProps = GlobalTypes & {
   stylish?: {
     header?: GenerateStyle<SiderMenuToken>;
     sider?: GenerateStyle<SiderMenuToken>;
+    rightHeader?: GenerateStyle<RightSiderMenuToken>;
+    rightSider?: GenerateStyle<RightSiderMenuToken>;
   };
   /** Layout 的品牌配置，表现为一张背景图片 */
   bgLayoutImgList?: {
@@ -113,6 +119,7 @@ export type ProLayoutProps = GlobalTypes & {
    * @example collapsed={true}
    */
   collapsed?: boolean;
+  rightCollapsed?: boolean;
 
   /**
    * @name 收起和展开的时候触发事件
@@ -120,6 +127,7 @@ export type ProLayoutProps = GlobalTypes & {
    * @example onCollapse=(collapsed)=>{ setCollapsed(collapsed) };
    */
   onCollapse?: (collapsed: boolean) => void;
+  onRightCollapse?: (collapsed: boolean) => void;
 
   /**
    * @name 页脚的配置
@@ -302,6 +310,55 @@ const renderSiderMenu = (props: ProLayoutProps, matchMenuKeys: string[]): React.
   return defaultDom;
 };
 
+const renderRightSiderMenu = (props: ProLayoutProps, matchMenuKeys: string[]): React.ReactNode => {
+  const { layout, isMobile, selectedKeys, openKeys, splitMenus, menuRender } = props;
+  if (props.menuRender === false || props.pure) {
+    return null;
+  }
+  let { menuData } = props;
+
+  /** 如果是分割菜单模式，需要专门实现一下 */
+  if (splitMenus && (openKeys !== false || layout === 'mix') && !isMobile) {
+    const [key] = selectedKeys || matchMenuKeys;
+    if (key) {
+      menuData = props.menuData?.find((item) => item.key === key)?.children || [];
+    } else {
+      menuData = [];
+    }
+  }
+  // 这里走了可以少一次循环
+  const clearMenuData = clearMenuItem(menuData || []);
+
+  if (clearMenuData && clearMenuData?.length < 1 && splitMenus) {
+    return null;
+  }
+  if (layout === 'top' && !isMobile) {
+    return (
+      <RightSiderMenu
+        matchMenuKeys={matchMenuKeys}
+        {...props}
+        hide
+        stylish={props.stylish?.rightSider}
+      />
+    );
+  }
+
+  const defaultDom = (
+    <RightSiderMenu
+      matchMenuKeys={matchMenuKeys}
+      {...props}
+      // 这里走了可以少一次循环
+      menuData={clearMenuData}
+      stylish={props.stylish?.rightSider}
+    />
+  );
+  if (menuRender) {
+    return menuRender(props, defaultDom);
+  }
+
+  return defaultDom;
+};
+
 const defaultPageTitleRender = (
   pageProps: GetPageTitleProps,
   props: ProLayoutProps,
@@ -359,6 +416,7 @@ const BaseProLayout: React.FC<ProLayoutProps> = (props) => {
   const {
     children,
     onCollapse: propsOnCollapse,
+    onRightCollapse: propsOnRightCollapse,
     location = { pathname: '/' },
     contentStyle,
     route,
@@ -516,6 +574,20 @@ const BaseProLayout: React.FC<ProLayoutProps> = (props) => {
     },
   );
 
+  const [rightCollapsed, onRightCollapse] = useMergedState<boolean>(
+    () => {
+      if (defaultCollapsed !== undefined) return defaultCollapsed;
+      if (process.env.NODE_ENV === 'TEST') return false;
+      if (isMobile) return false;
+      if (colSize === 'md') return false;
+      return false;
+    },
+    {
+      value: props.rightCollapsed,
+      onChange: propsOnRightCollapse,
+    },
+  );
+
   // Splicing parameters, adding menuData and formatMessage in props
   const defaultProps = Omit(
     {
@@ -559,6 +631,18 @@ const BaseProLayout: React.FC<ProLayoutProps> = (props) => {
       onCollapse,
       isMobile,
       collapsed,
+    },
+    matchMenuKeys,
+  );
+
+  // render sider dom
+  const rightSiderMenuDom = renderRightSiderMenu(
+    {
+      ...defaultProps,
+      menuData,
+      onRightCollapse,
+      isMobile,
+      rightCollapsed,
     },
     matchMenuKeys,
   );
@@ -653,6 +737,7 @@ const BaseProLayout: React.FC<ProLayoutProps> = (props) => {
         menuData,
         isMobile,
         collapsed,
+        rightCollapsed,
         hasPageContainer,
         setHasPageContainer,
         isChildrenLayout: true,
@@ -683,6 +768,7 @@ const BaseProLayout: React.FC<ProLayoutProps> = (props) => {
             }}
           >
             {siderMenuDom}
+            {rightSiderMenuDom}
             <div style={genLayoutStyle} className={`${proLayoutClassName}-container ${hashId}`}>
               {headerDom}
               <WrapContent

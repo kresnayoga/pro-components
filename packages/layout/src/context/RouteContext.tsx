@@ -11,6 +11,7 @@ export type RouteContextType = {
   isMobile?: boolean;
   prefixCls?: string;
   collapsed?: boolean;
+  rightCollapsed?: boolean;
   hasSiderMenu?: boolean;
   hasHeader?: boolean;
   siderWidth?: number;
