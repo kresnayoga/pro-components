@@ -138,14 +138,22 @@ class MenuUtil {
     hashId: string;
   };
 
-  getNavMenuItems = (menusData: MenuDataItem[] = [], level: number): ItemType[] =>
+  getNavMenuItems = (
+    menusData: MenuDataItem[] = [],
+    level: number,
+    activeMenu: string,
+  ): ItemType[] =>
     menusData
-      .map((item) => this.getSubMenuOrItem(item, level))
+      .map((item) => this.getSubMenuOrItem(item, level, activeMenu))
       .filter((item) => item)
       .flat(1);
 
   /** Get SubMenu or Item */
-  getSubMenuOrItem = (item: MenuDataItem, level: number): ItemType | ItemType[] => {
+  getSubMenuOrItem = (
+    item: MenuDataItem,
+    level: number,
+    activeMenu: string,
+  ): ItemType | ItemType[] => {
     const {
       subMenuItemRender,
       baseClassName,
@@ -163,7 +171,17 @@ class MenuUtil {
 
     const menuType = isGroup && level === 0 ? ('group' as const) : undefined;
 
-    if (Array.isArray(children) && children.length > 0) {
+    console.log('0. item.path: ' + item.path);
+    console.log('0. activeMenu: ' + activeMenu);
+    console.log('0. activeMenu bool: ' + (item.path == activeMenu));
+    console.log('0. activeMenu index: ' + item.path?.indexOf(activeMenu));
+
+    if (
+      Array.isArray(children) &&
+      children.length > 0 &&
+      activeMenu != undefined &&
+      item.path == activeMenu
+    ) {
       /** Menu 第一级可以有icon，或者 isGroup 时第二级别也要有 */
       const shouldHasIcon = level === 0 || (isGroup && level === 1);
 
@@ -212,10 +230,49 @@ class MenuUtil {
         ? subMenuItemRender({ ...item, isUrl: false }, defaultTitle, this.props)
         : defaultTitle;
 
-      const childrenList = this.getNavMenuItems(children, level + 1);
+      const childrenList = this.getNavMenuItems(children, level + 1, activeMenu);
       if (isGroup && level === 0 && this.props.rightCollapsed && !menu.collapsedShowGroupTitle) {
         return childrenList;
       }
+
+      console.log('1. Menu Name : ' + item.tooltip || title);
+      console.log('1. Item: ' + item);
+      console.log(item);
+      console.log('1. Level : ' + level);
+      console.log('1. Selected Key : ' + activeMenu);
+      console.log(
+        [
+          {
+            type: menuType,
+            key: item.key! || item.path!,
+            title: item.tooltip || title,
+            label: title,
+            onClick: isGroup ? undefined : item.onTitleClick,
+            children: childrenList,
+            className: classNames({
+              [`${baseClassName}-group`]: menuType === 'group',
+              [`${baseClassName}-submenu`]: menuType !== 'group',
+              [`${baseClassName}-submenu-has-icon`]:
+                menuType !== 'group' && shouldHasIcon && iconDom,
+            }),
+          } as ItemType,
+          isGroup && level === 0
+            ? ({
+                type: 'divider',
+                prefixCls,
+                className: `${baseClassName}-divider`,
+                key: (item.key! || item.path!) + '-group-divider',
+                style: {
+                  padding: 0,
+                  borderBlockEnd: 0,
+                  margin: this.props.rightCollapsed ? '4px' : '6px 16px',
+                  marginBlockStart: this.props.rightCollapsed ? 4 : 8,
+                  borderColor: designToken?.layout?.sider?.colorMenuItemDivider,
+                },
+              } as ItemType)
+            : undefined,
+        ].filter(Boolean) as ItemType[],
+      );
 
       return [
         {
@@ -247,16 +304,32 @@ class MenuUtil {
             } as ItemType)
           : undefined,
       ].filter(Boolean) as ItemType[];
+    } else if (activeMenu != undefined && item.path?.indexOf(activeMenu) != -1) {
+      console.log('2. Menu Name : ' + name);
+      console.log('2. Item: ' + item);
+      console.log(item);
+      console.log('2. Level : ' + level);
+      console.log('2. Selected Key : ' + activeMenu);
+      console.log({
+        className: `${baseClassName}-menu-item`,
+        title: item.tooltip || name,
+        disabled: item.disabled,
+        key: item.key! || item.path!,
+        onClick: item.onTitleClick,
+        label: this.getMenuItemPath(item, level),
+      });
+
+      return {
+        className: `${baseClassName}-menu-item`,
+        title: item.tooltip || name,
+        disabled: item.disabled,
+        key: item.key! || item.path!,
+        onClick: item.onTitleClick,
+        label: this.getMenuItemPath(item, level),
+      };
     }
 
-    return {
-      className: `${baseClassName}-menu-item`,
-      title: item.tooltip || name,
-      disabled: item.disabled,
-      key: item.key! || item.path!,
-      onClick: item.onTitleClick,
-      label: this.getMenuItemPath(item, level),
-    };
+    return null;
   };
 
   getIntlName = (item: MenuDataItem) => {
@@ -403,6 +476,7 @@ const RightBaseMenu: React.FC<RightBaseMenuProps & RightPrivateSiderMenuProps> =
     mode,
     className,
     handleOpenChange,
+    isMobile,
     style,
     menuData,
     prefixCls,
@@ -543,9 +617,40 @@ const RightBaseMenu: React.FC<RightBaseMenuProps & RightPrivateSiderMenuProps> =
 
   const finallyData = props.postMenuData ? props.postMenuData(menuData) : menuData;
 
+  console.log('selectedKeys : ');
+  console.log(selectedKeys);
+  console.log('finallyData : ');
+  console.log(finallyData);
+  console.log('isMobile : ' + isMobile);
+
+  let activeMenu = 'home';
+  let finallyData2 = finallyData;
+
+  if (selectedKeys && selectedKeys.length > 0 && finallyData && finallyData[0].path == '/home') {
+    activeMenu = selectedKeys ? selectedKeys[0] : 'home';
+    finallyData2 = finallyData?.filter((path) => path.path == activeMenu);
+    console.log('--finallyData2 : ');
+    console.log(finallyData2);
+    try {
+      finallyData2 = finallyData2 ? finallyData2[0].children : finallyData2;
+    } catch (error) {
+      finallyData2 = finallyData;
+    }
+
+    activeMenu = selectedKeys ? selectedKeys[1] : 'home';
+    finallyData2 = finallyData2?.filter((path) => path.path == activeMenu);
+  } else {
+    activeMenu = selectedKeys ? selectedKeys[1] : 'home';
+    finallyData2 = finallyData?.filter((path) => path.path == activeMenu);
+  }
+
+  console.log('finallyData2 : ');
+  console.log(finallyData2);
+
   if (finallyData && finallyData?.length < 1) {
     return null;
   }
+
   return wrapSSR(
     <Menu
       {...openKeysProps}
@@ -564,7 +669,7 @@ const RightBaseMenu: React.FC<RightBaseMenuProps & RightPrivateSiderMenuProps> =
         [`${baseClassName}-horizontal`]: mode === 'horizontal',
         [`${baseClassName}-collapsed`]: props.rightCollapsed,
       })}
-      items={menuUtils.getNavMenuItems(finallyData, 0)}
+      items={menuUtils.getNavMenuItems(finallyData2, 0, activeMenu)}
       onOpenChange={setOpenKeys}
       {...props.menuProps}
     />,

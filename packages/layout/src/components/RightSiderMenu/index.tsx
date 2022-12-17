@@ -6,7 +6,7 @@ import React, { useState } from 'react';
 import type { RightPrivateSiderMenuProps, RightSiderMenuProps } from './RightSiderMenu';
 import { RightSiderMenu } from './RightSiderMenu';
 import { rightUseStyle } from './style/index';
-import { BookOutlined, CloseOutlined } from '@ant-design/icons';
+import { FileTextOutlined, CloseOutlined } from '@ant-design/icons';
 
 const RightSiderMenuWrapper: React.FC<RightSiderMenuProps & RightPrivateSiderMenuProps> = (
   props,
@@ -66,7 +66,7 @@ const RightSiderMenuWrapper: React.FC<RightSiderMenuProps & RightPrivateSiderMen
           height: '48px',
           fontSize: '16px',
           textAlign: 'center',
-          backgroundColor: '#1677ff',
+          backgroundColor: '#f7b703',
           borderEndStartRadius: '8px',
           borderStartStartRadius: '8px',
           backdropFilter: 'saturate(180%) blur(20px)',
@@ -83,7 +83,7 @@ const RightSiderMenuWrapper: React.FC<RightSiderMenuProps & RightPrivateSiderMen
             }}
           />
         ) : (
-          <BookOutlined
+          <FileTextOutlined
             style={{
               color: '#fff',
               fontSize: 20,
@@ -93,14 +93,14 @@ const RightSiderMenuWrapper: React.FC<RightSiderMenuProps & RightPrivateSiderMen
         )}
       </div>
       <Drawer
-        placement="right"
-        className={classNames(`${prefixCls}-drawer-sider`, className)}
-        {...drawerOpenProps}
         style={{
           padding: 0,
           height: '100vh',
-          ...style,
         }}
+        title="Course Menu Content"
+        placement="right"
+        className={classNames(`${prefixCls}-drawer-sider`, className)}
+        {...drawerOpenProps}
         closable={false}
         maskClosable={true}
         onClose={onClose}
