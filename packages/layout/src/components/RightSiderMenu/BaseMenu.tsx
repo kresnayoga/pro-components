@@ -563,7 +563,7 @@ const RightBaseMenu: React.FC<RightBaseMenuProps & RightPrivateSiderMenuProps> =
       } else if (menu?.ignoreFlatMenu && defaultOpenAll) {
         // 忽略用户手动折叠过的菜单状态，折叠按钮切换之后也可实现默认展开所有菜单
         setOpenKeys(getOpenKeysFromMenuData(menuData));
-      } else setDefaultOpenAll(false);
+      } else setDefaultOpenAll(true);
     },
     // eslint-disable-next-line react-hooks/exhaustive-deps
     [matchMenuKeys.join('-')],
@@ -625,6 +625,7 @@ const RightBaseMenu: React.FC<RightBaseMenuProps & RightPrivateSiderMenuProps> =
 
   let activeMenu = 'home';
   let finallyData2 = finallyData;
+  let defaultKey = defaultOpenKeysRef.current;
 
   if (selectedKeys && selectedKeys.length > 0 && finallyData && finallyData[0].path == '/home') {
     activeMenu = selectedKeys ? selectedKeys[0] : 'home';
@@ -639,13 +640,32 @@ const RightBaseMenu: React.FC<RightBaseMenuProps & RightPrivateSiderMenuProps> =
 
     activeMenu = selectedKeys ? selectedKeys[1] : 'home';
     finallyData2 = finallyData2?.filter((path) => path.path == activeMenu);
+    defaultKey = finallyData2 ? [finallyData2[0].key + ''] : [''];
+
+    console.log('finallyData2 : ');
+    console.log(finallyData2);
+
+    try {
+      defaultKey = finallyData2 ? [finallyData2[0].key + ''] : [''];
+    } catch (error) {
+      defaultKey = defaultOpenKeysRef.current;
+    }
   } else {
     activeMenu = selectedKeys ? selectedKeys[1] : 'home';
     finallyData2 = finallyData?.filter((path) => path.path == activeMenu);
+
+    console.log('finallyData2 : ');
+    console.log(finallyData2);
+
+    try {
+      defaultKey = finallyData2 ? [finallyData2[0].key + ''] : [''];
+    } catch (error) {
+      defaultKey = defaultOpenKeysRef.current;
+    }
   }
 
-  console.log('finallyData2 : ');
-  console.log(finallyData2);
+  console.log('defaultOpenKeys : ');
+  console.log(defaultKey);
 
   if (finallyData && finallyData?.length < 1) {
     return null;
@@ -657,7 +677,7 @@ const RightBaseMenu: React.FC<RightBaseMenuProps & RightPrivateSiderMenuProps> =
       key="Menu"
       mode={mode}
       inlineIndent={16}
-      defaultOpenKeys={defaultOpenKeysRef.current}
+      defaultOpenKeys={defaultKey}
       theme="light"
       selectedKeys={selectedKeys}
       style={{

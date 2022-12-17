@@ -96,6 +96,7 @@ const RightSiderMenuWrapper: React.FC<RightSiderMenuProps & RightPrivateSiderMen
         style={{
           padding: 0,
           height: '100vh',
+          ...style,
         }}
         title="Course Menu Content"
         placement="right"
@@ -114,7 +115,7 @@ const RightSiderMenuWrapper: React.FC<RightSiderMenuProps & RightPrivateSiderMen
             {...omitProps}
             isMobile={true}
             className={siderClassName}
-            rightCollapsed={isMobile ? false : rightCollapsed}
+            rightCollapsed={isMobile ? false : false}
             splitMenus={false}
             originCollapsed={rightCollapsed}
           />
