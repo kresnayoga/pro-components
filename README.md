@@ -1,5 +1,4 @@
-#Develop
-English | [简体中文](./README.zh-CN.md) | [Español](./README.es-PR.md)
+#Develop English | [简体中文](./README.zh-CN.md) | [Español](./README.es-PR.md)
 
 # ProComponents
 
@@ -33,3 +32,15 @@ Any type of contribution is welcome, here are some examples of how you may contr
 ## LICENSE
 
 MIT
+
+pro-components:
+
+Terminal 1 : yarn build
+
+Terminal 2 : cd packages/layout npm pack
+
+Terminal 3 : cd packages/components npm pack
+
+tutorial pro:
+
+yarn remove @ant-design/pro-components -change version yarn install

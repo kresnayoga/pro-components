@@ -171,10 +171,10 @@ class MenuUtil {
 
     const menuType = isGroup && level === 0 ? ('group' as const) : undefined;
 
-    console.log('0. item.path: ' + item.path);
-    console.log('0. activeMenu: ' + activeMenu);
-    console.log('0. activeMenu bool: ' + (item.path == activeMenu));
-    console.log('0. activeMenu index: ' + item.path?.indexOf(activeMenu));
+    //#console.log('0. item.path: ' + item.path);
+    //#console.log('0. activeMenu: ' + activeMenu);
+    //#console.log('0. activeMenu bool: ' + (item.path == activeMenu));
+    //#console.log('0. activeMenu index: ' + item.path?.indexOf(activeMenu));
 
     if (
       Array.isArray(children) &&
@@ -235,44 +235,44 @@ class MenuUtil {
         return childrenList;
       }
 
-      console.log('1. Menu Name : ' + item.tooltip || title);
-      console.log('1. Item: ' + item);
-      console.log(item);
-      console.log('1. Level : ' + level);
-      console.log('1. Selected Key : ' + activeMenu);
-      console.log(
-        [
-          {
-            type: menuType,
-            key: item.key! || item.path!,
-            title: item.tooltip || title,
-            label: title,
-            onClick: isGroup ? undefined : item.onTitleClick,
-            children: childrenList,
-            className: classNames({
-              [`${baseClassName}-group`]: menuType === 'group',
-              [`${baseClassName}-submenu`]: menuType !== 'group',
-              [`${baseClassName}-submenu-has-icon`]:
-                menuType !== 'group' && shouldHasIcon && iconDom,
-            }),
-          } as ItemType,
-          isGroup && level === 0
-            ? ({
-                type: 'divider',
-                prefixCls,
-                className: `${baseClassName}-divider`,
-                key: (item.key! || item.path!) + '-group-divider',
-                style: {
-                  padding: 0,
-                  borderBlockEnd: 0,
-                  margin: this.props.rightCollapsed ? '4px' : '6px 16px',
-                  marginBlockStart: this.props.rightCollapsed ? 4 : 8,
-                  borderColor: designToken?.layout?.sider?.colorMenuItemDivider,
-                },
-              } as ItemType)
-            : undefined,
-        ].filter(Boolean) as ItemType[],
-      );
+      //#console.log('1. Menu Name : ' + item.tooltip || title);
+      //#console.log('1. Item: ' + item);
+      //#console.log(item);
+      //#console.log('1. Level : ' + level);
+      //#console.log('1. Selected Key : ' + activeMenu);
+      // console.log(
+      //   [
+      //     {
+      //       type: menuType,
+      //       key: item.key! || item.path!,
+      //       title: item.tooltip || title,
+      //       label: title,
+      //       onClick: isGroup ? undefined : item.onTitleClick,
+      //       children: childrenList,
+      //       className: classNames({
+      //         [`${baseClassName}-group`]: menuType === 'group',
+      //         [`${baseClassName}-submenu`]: menuType !== 'group',
+      //         [`${baseClassName}-submenu-has-icon`]:
+      //           menuType !== 'group' && shouldHasIcon && iconDom,
+      //       }),
+      //     } as ItemType,
+      //     isGroup && level === 0
+      //       ? ({
+      //           type: 'divider',
+      //           prefixCls,
+      //           className: `${baseClassName}-divider`,
+      //           key: (item.key! || item.path!) + '-group-divider',
+      //           style: {
+      //             padding: 0,
+      //             borderBlockEnd: 0,
+      //             margin: this.props.rightCollapsed ? '4px' : '6px 16px',
+      //             marginBlockStart: this.props.rightCollapsed ? 4 : 8,
+      //             borderColor: designToken?.layout?.sider?.colorMenuItemDivider,
+      //           },
+      //         } as ItemType)
+      //       : undefined,
+      //   ].filter(Boolean) as ItemType[],
+      // );
 
       return [
         {
@@ -305,19 +305,19 @@ class MenuUtil {
           : undefined,
       ].filter(Boolean) as ItemType[];
     } else if (activeMenu != undefined && item.path?.indexOf(activeMenu) != -1) {
-      console.log('2. Menu Name : ' + name);
-      console.log('2. Item: ' + item);
-      console.log(item);
-      console.log('2. Level : ' + level);
-      console.log('2. Selected Key : ' + activeMenu);
-      console.log({
-        className: `${baseClassName}-menu-item`,
-        title: item.tooltip || name,
-        disabled: item.disabled,
-        key: item.key! || item.path!,
-        onClick: item.onTitleClick,
-        label: this.getMenuItemPath(item, level),
-      });
+      //#console.log('2. Menu Name : ' + name);
+      //#console.log('2. Item: ' + item);
+      //#console.log(item);
+      //#console.log('2. Level : ' + level);
+      //#console.log('2. Selected Key : ' + activeMenu);
+      // console.log({
+      //   className: `${baseClassName}-menu-item`,
+      //   title: item.tooltip || name,
+      //   disabled: item.disabled,
+      //   key: item.key! || item.path!,
+      //   onClick: item.onTitleClick,
+      //   label: this.getMenuItemPath(item, level),
+      // });
 
       return {
         className: `${baseClassName}-menu-item`,
@@ -617,55 +617,56 @@ const RightBaseMenu: React.FC<RightBaseMenuProps & RightPrivateSiderMenuProps> =
 
   const finallyData = props.postMenuData ? props.postMenuData(menuData) : menuData;
 
-  console.log('selectedKeys : ');
-  console.log(selectedKeys);
-  console.log('finallyData : ');
-  console.log(finallyData);
-  console.log('isMobile : ' + isMobile);
+  //#console.log('selectedKeys : ');
+  //#console.log(selectedKeys);
+  //#console.log('finallyData : ');
+  //#console.log(finallyData);
+  //#console.log('isMobile : ' + isMobile);
 
   let activeMenu = 'home';
   let finallyData2 = finallyData;
   let defaultKey = defaultOpenKeysRef.current;
 
   if (selectedKeys && selectedKeys.length > 0 && finallyData && finallyData[0].path == '/home') {
-    activeMenu = selectedKeys ? selectedKeys[0] : 'home';
-    finallyData2 = finallyData?.filter((path) => path.path == activeMenu);
-    console.log('--finallyData2 : ');
-    console.log(finallyData2);
     try {
+      activeMenu = selectedKeys ? selectedKeys[0] : 'home';
+      finallyData2 = finallyData?.filter((path) => path.path == activeMenu);
+      //#console.log('--finallyData2 : ');
+      //#console.log(finallyData2);
+
       finallyData2 = finallyData2 ? finallyData2[0].children : finallyData2;
     } catch (error) {
       finallyData2 = finallyData;
     }
 
-    activeMenu = selectedKeys ? selectedKeys[1] : 'home';
-    finallyData2 = finallyData2?.filter((path) => path.path == activeMenu);
-    defaultKey = finallyData2 ? [finallyData2[0].key + ''] : [''];
-
-    console.log('finallyData2 : ');
-    console.log(finallyData2);
-
     try {
+      activeMenu = selectedKeys ? selectedKeys[1] : 'home';
+      finallyData2 = finallyData2?.filter((path) => path.path == activeMenu);
+      defaultKey = finallyData2 ? [finallyData2[0].key + ''] : [''];
+
+      //#console.log('finallyData2 : ');
+      //#console.log(finallyData2);
+
       defaultKey = finallyData2 ? [finallyData2[0].key + ''] : [''];
     } catch (error) {
       defaultKey = defaultOpenKeysRef.current;
     }
   } else {
-    activeMenu = selectedKeys ? selectedKeys[1] : 'home';
-    finallyData2 = finallyData?.filter((path) => path.path == activeMenu);
-
-    console.log('finallyData2 : ');
-    console.log(finallyData2);
-
     try {
+      activeMenu = selectedKeys ? selectedKeys[1] : 'home';
+      finallyData2 = finallyData?.filter((path) => path.path == activeMenu);
+
+      //#console.log('finallyData2 : ');
+      //#console.log(finallyData2);
+
       defaultKey = finallyData2 ? [finallyData2[0].key + ''] : [''];
     } catch (error) {
       defaultKey = defaultOpenKeysRef.current;
     }
   }
 
-  console.log('defaultOpenKeys : ');
-  console.log(defaultKey);
+  //#console.log('defaultOpenKeys : ');
+  //#console.log(defaultKey);
 
   if (finallyData && finallyData?.length < 1) {
     return null;
