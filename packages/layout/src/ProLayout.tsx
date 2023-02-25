@@ -578,8 +578,8 @@ const BaseProLayout: React.FC<ProLayoutProps> = (props) => {
     () => {
       if (defaultCollapsed !== undefined) return defaultCollapsed;
       if (process.env.NODE_ENV === 'TEST') return false;
-      if (isMobile) return false;
-      if (colSize === 'md') return false;
+      if (isMobile) return true;
+      if (colSize === 'md') return true;
       return false;
     },
     {

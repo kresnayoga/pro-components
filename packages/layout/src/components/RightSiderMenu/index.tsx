@@ -2,7 +2,7 @@ import { openVisibleCompatible } from '@ant-design/pro-utils';
 import { Drawer } from 'antd';
 import classNames from 'classnames';
 import Omit from 'omit.js';
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import type { RightPrivateSiderMenuProps, RightSiderMenuProps } from './RightSiderMenu';
 import { RightSiderMenu } from './RightSiderMenu';
 import { rightUseStyle } from './style/index';
@@ -30,6 +30,15 @@ const RightSiderMenuWrapper: React.FC<RightSiderMenuProps & RightPrivateSiderMen
     onRightCollapse?.(true);
   };
 
+  useEffect(() => {
+    // if (isMobile === true) {
+    //   onRightCollapse?.(true);
+    // }
+
+    onRightCollapse?.(true);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isMobile]);
+
   const omitProps = Omit(props, ['className', 'style']);
 
   const { wrapSSR, hashId } = rightUseStyle(`${prefixCls}-sider`, {
@@ -43,8 +52,8 @@ const RightSiderMenuWrapper: React.FC<RightSiderMenuProps & RightPrivateSiderMen
   }
 
   const drawerOpenProps = openVisibleCompatible(!rightCollapsed, () => {
-    onRightCollapse?.(false);
-    setOpen(true);
+    onRightCollapse?.(true);
+    setOpen(false);
   });
 
   return wrapSSR(
@@ -115,7 +124,7 @@ const RightSiderMenuWrapper: React.FC<RightSiderMenuProps & RightPrivateSiderMen
             {...omitProps}
             isMobile={true}
             className={siderClassName}
-            rightCollapsed={isMobile ? false : false}
+            rightCollapsed={isMobile ? false : rightCollapsed}
             splitMenus={false}
             originCollapsed={rightCollapsed}
           />
